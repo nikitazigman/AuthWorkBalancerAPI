@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  auth:
+    build: auth_service/
+    command: gunicorn -c gunicorn.py
+    volumes:
+      - ./auth_service:/code
+    ports:
+      - "3000:3000"
+
+  resources:
+    build: resource_service/
+    command: gunicorn -c gunicorn.py
+    volumes:
+      - ./resource_service:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth
+
+  nginx:
+    build: conf/nginx/
+    volumes:
+      - ./conf/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+
+volumes:
+  nginx_volume:
