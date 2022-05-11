@@ -1,10 +1,18 @@
 """Gunicorn *development* config file"""
+
+import subprocess as sp
+
+# project path
+pythonpath = "./service"
 # Django WSGI application path in pattern MODULE_NAME:VARIABLE_NAME
-wsgi_app = "resource_service.wsgi:application"
+wsgi_app = "service.wsgi:application"
 # The granularity of Error log outputs
 loglevel = "INFO"
 # The number of worker processes for handling requests
-workers = 2 
+p = sp.Popen("grep processor /proc/cpuinfo | wc -l", stdout=sp.PIPE, shell=True)
+core_number = int(p.communicate()[0])
+
+workers = core_number * 2 + 1  # core*2 + 1
 # The socket to bind
 bind = "0.0.0.0:8000"
 # Restart workers when code changes (development only!)
